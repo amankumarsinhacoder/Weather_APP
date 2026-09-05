@@ -1,1 +1,110 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#081323" />
+  <meta name="description" content="Live weather, forecasts and air quality for cities around the world." />
+  <title>Atmosphere — Live Weather</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+<body data-weather="clear">
+  <div class="ambient" aria-hidden="true"><span></span><span></span><span></span></div>
+  <div class="app-shell">
+    <aside class="sidebar glass-panel">
+      <div class="brand"><span class="brand-mark">A</span><div><strong>Atmosphere</strong><small>Weather, made visible</small></div></div>
+      <div class="search-wrap">
+        <form id="searchForm" role="search">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m21 21-4.3-4.3m2.3-5.2A7.5 7.5 0 1 1 4 11.5a7.5 7.5 0 0 1 15 0Z"/></svg>
+          <input id="citySearch" type="search" placeholder="Search any city" autocomplete="off" aria-label="Search any city" />
+          <kbd>↵</kbd>
+        </form>
+        <div id="suggestions" class="suggestions" role="listbox" hidden></div>
+      </div>
+      <button id="locationBtn" class="location-button" type="button">
+        <span class="icon-box">⌖</span><span>Use my location</span><span class="arrow">→</span>
+      </button>
+      <div class="rail-heading"><span>Saved places</span><button id="clearSaved" type="button">Clear</button></div>
+      <div id="savedCities" class="saved-cities"></div>
+      <div class="sidebar-footer">
+        <span id="liveDot" class="live-dot"></span><span>Live data</span><span class="api-credit">Open-Meteo</span>
+      </div>
+    </aside>
+
+    <main class="dashboard">
+      <header class="topbar">
+        <button id="mobileMenu" class="mobile-menu" type="button" aria-label="Open saved cities">☰</button>
+        <div class="date-block"><span id="todayLabel">Today</span><strong id="fullDate">—</strong></div>
+        <div class="top-actions">
+          <button id="saveCity" class="icon-button" type="button" aria-label="Save this city" title="Save city">♡</button>
+          <div class="unit-toggle" role="group" aria-label="Temperature unit"><button class="active" data-unit="c">°C</button><button data-unit="f">°F</button></div>
+        </div>
+      </header>
+
+      <section class="hero" aria-live="polite">
+        <div class="hero-copy">
+          <div class="eyebrow"><span id="locationBadge">● LIVE CONDITIONS</span><span id="localTime">—</span></div>
+          <h1 id="cityName">New Delhi</h1>
+          <p id="regionName">Delhi, India</p>
+          <div class="temperature-line"><span id="temperature">--</span><sup id="tempUnit">°</sup><div><strong id="condition">Loading weather…</strong><span id="hiLow">H: --° · L: --°</span></div></div>
+          <p id="weatherSummary" class="weather-summary">Gathering the latest conditions for you.</p>
+        </div>
+        <div class="weather-orbit" aria-hidden="true">
+          <div class="orbit orbit-one"></div><div class="orbit orbit-two"></div>
+          <div id="heroWeatherIcon" class="hero-weather-icon">☀</div>
+          <span class="orbital-stat stat-one">Humidity <b id="orbitHumidity">--%</b></span>
+          <span class="orbital-stat stat-two">Wind <b id="orbitWind">-- km/h</b></span>
+        </div>
+      </section>
+
+      <section class="hourly-panel glass-card">
+        <div class="section-heading"><div><span class="section-kicker">NEXT 24 HOURS</span><h2>Hourly forecast</h2></div><span id="hourlyHint" class="subtle">Scroll to explore →</span></div>
+        <div id="hourlyForecast" class="hourly-track"></div>
+      </section>
+
+      <div class="content-grid">
+        <section class="forecast-panel glass-card">
+          <div class="section-heading"><div><span class="section-kicker">WEEK AHEAD</span><h2>7-day outlook</h2></div><span id="forecastRange" class="subtle"></span></div>
+          <div id="dailyForecast" class="daily-list"></div>
+        </section>
+
+        <section class="insights-grid">
+          <article class="metric-card aqi-card glass-card">
+            <div class="metric-label"><span>◉</span> AIR QUALITY</div>
+            <div class="aqi-main"><div><strong id="aqiValue">--</strong><span id="aqiLabel">Loading</span></div><span id="aqiAdvice">Checking the air around you.</span></div>
+            <div class="aqi-scale"><i id="aqiMarker"></i></div>
+            <div class="pollutants"><span>PM₂.₅ <b id="pm25">--</b></span><span>PM₁₀ <b id="pm10">--</b></span></div>
+          </article>
+
+          <article class="metric-card wind-card glass-card">
+            <div class="metric-label"><span>↗</span> WIND</div>
+            <div class="compass"><div class="compass-ring"><span>N</span><span>E</span><span>S</span><span>W</span><i id="windNeedle"></i><b id="windSpeed">--</b><small>km/h</small></div></div>
+            <div class="wind-detail"><span>Gusts</span><b id="windGust">-- km/h</b></div>
+          </article>
+
+          <article class="metric-card sun-card glass-card">
+            <div class="metric-label"><span>◒</span> SUN CYCLE</div>
+            <div class="sun-times"><div><span>Sunrise</span><strong id="sunrise">--:--</strong></div><div><span>Sunset</span><strong id="sunset">--:--</strong></div></div>
+            <div class="sun-path"><i id="sunPosition"></i></div>
+            <span id="daylight" class="card-note">— hours of daylight</span>
+          </article>
+
+          <article class="metric-card glass-card"><div class="metric-label"><span>◌</span> FEELS LIKE</div><strong class="big-metric" id="feelsLike">--°</strong><p id="feelsNote">Similar to the actual temperature.</p></article>
+          <article class="metric-card glass-card"><div class="metric-label"><span>◇</span> HUMIDITY</div><strong class="big-metric" id="humidity">--%</strong><div class="meter"><i id="humidityMeter"></i></div><p id="humidityNote">Comfortable humidity.</p></article>
+          <article class="metric-card glass-card"><div class="metric-label"><span>☀</span> UV INDEX</div><strong class="big-metric" id="uvIndex">--</strong><p id="uvLabel">—</p><div class="uv-scale"><i id="uvMarker"></i></div></article>
+          <article class="metric-card glass-card"><div class="metric-label"><span>◉</span> VISIBILITY</div><strong class="big-metric" id="visibility">-- km</strong><p id="visibilityNote">—</p></article>
+          <article class="metric-card glass-card"><div class="metric-label"><span>⌁</span> PRESSURE</div><strong class="big-metric" id="pressure">--</strong><p>hPa at ground level</p></article>
+          <article class="metric-card rain-card glass-card"><div class="metric-label"><span>♢</span> PRECIPITATION</div><strong class="big-metric" id="precipitation">-- mm</strong><p id="rainChance">— chance today</p><div class="rain-drops" aria-hidden="true"><i></i><i></i><i></i><i></i></div></article>
+        </section>
+      </div>
+      <footer><span>Weather data updates automatically</span><span id="lastUpdated">Last updated —</span></footer>
+    </main>
+  </div>
+  <div id="toast" class="toast" role="status"></div>
+  <script src="./app.js"></script>
+</body>
+</html>
 
